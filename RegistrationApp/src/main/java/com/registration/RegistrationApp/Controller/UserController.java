@@ -6,8 +6,11 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +28,8 @@ public class UserController {
 
 	@Autowired
 	private UserService userService;
+	
+	private BCryptPasswordEncoder bCryptPasswordEncoder;
 
 	public final static Logger logger = Logger.getLogger(UserController.class);
 
@@ -55,8 +60,8 @@ public class UserController {
 		}
 	}
 
-	@GetMapping("/getByUserId")
-	public ResponseEntity<ResultModel> getByUserId(@RequestParam("userId") String userId) {
+	@GetMapping("/getByUserId/{userId}")
+	public ResponseEntity<ResultModel> getByUserId(@PathVariable("userId") String userId) {
 		ResultModel resultModel = new ResultModel();
 		logger.info("Getting User By UserId From Users");
 		try {
@@ -217,8 +222,8 @@ public class UserController {
 		}
 	}
 
-	@DeleteMapping("/deleteUserById")
-	public ResponseEntity<ResultModel> deleteUserById(@RequestParam("id") Integer id) {
+	@DeleteMapping("/deleteUserById/{id}")
+	public ResponseEntity<ResultModel> deleteUserById(@PathVariable("id") Integer id) {
 		ResultModel resultModel = new ResultModel();
 		logger.info("Deleting  User in Users.......");
 		try {
@@ -260,4 +265,28 @@ public class UserController {
 			return new ResponseEntity<ResultModel>(resultModel, HttpStatus.UNPROCESSABLE_ENTITY);
 		}
 	}
+	
+	@PostMapping("/saveUpdateUser1")
+	public ResponseEntity<ResultModel> cretaeUpdateUser1(@RequestBody Users user) {
+		ResultModel resultModel = new ResultModel();
+		logger.info("Creating data in Users.......");
+		try {
+			List<String> response = userService.saveUpdateUser(user);
+			if (response.contains("Success")) {
+				resultModel.setData(response);
+				resultModel.setMessage("Success");
+				logger.info("Creating/Update User Successfully.......");
+			} else {
+				resultModel.setMessage("Failed");
+				resultModel.setMessageList(response);
+				logger.info("" + response);
+			}
+		} catch (Exception e) {
+			logger.info("Error Occure" + e);
+			return new ResponseEntity<ResultModel>(resultModel, HttpStatus.UNPROCESSABLE_ENTITY);
+		}
+		return new ResponseEntity<ResultModel>(resultModel, HttpStatus.CREATED);
+	}
+
+	
 }

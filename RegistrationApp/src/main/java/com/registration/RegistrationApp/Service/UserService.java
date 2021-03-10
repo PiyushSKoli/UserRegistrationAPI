@@ -13,6 +13,7 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.registration.RegistrationApp.Dto.SearchByNameSurnamePincodeDto;
@@ -29,6 +30,9 @@ public class UserService {
 	private UserRepository userRepository;
 
 	private static Validator validator;
+	
+	@Autowired
+	private BCryptPasswordEncoder bCryptPasswordEncoder;
 
 	public List<Users> getAllUsers() {
 		return (List<Users>) userRepository.findAll();
@@ -40,6 +44,13 @@ public class UserService {
 
 	public List<String> saveUpdateUser(@Valid Users user) {
 		Users userData = userRepository.findByUserId(user.getUserId());
+		String pwd=user.getPassword();
+		if(pwd!=null) {
+			System.out.println("Password is= "+pwd);
+			String encryptedPwd=bCryptPasswordEncoder.encode(pwd);
+			System.out.println("Encoded Password is= "+encryptedPwd);
+			user.setPassword(encryptedPwd);			
+		}
 		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 		validator = factory.getValidator();
 		List<String> response = new ArrayList<String>();
@@ -53,6 +64,7 @@ public class UserService {
 			if (userData != null) {
 				user.setId(userData.getId());
 				userData.setName(user.getName());
+				userData.setPassword(user.getPassword());
 				userData.setId(userData.getId());
 				userData.setSurname(user.getSurname());
 				userData.setCity(user.getCity());
@@ -64,6 +76,7 @@ public class UserService {
 				userData.setEmail(user.getEmail());
 				userRepository.save(userData);
 			} else {
+				System.out.println("Inside Save API");
 				userRepository.save(user);
 				String userId = "NeoSoft_" + user.getId();
 				user.setUserId(userId);

@@ -34,6 +34,10 @@ public class Users implements Serializable{
 	@Column(name="UserId")
 	private String userId;
 	
+	@NotEmpty(message = "password may not be null")
+	@Column(name="password",nullable = false)
+	private String password;
+	
 	@NotEmpty(message = "Name may not be null")
 	@Column(name="Name",nullable = false)
 	private String name;
