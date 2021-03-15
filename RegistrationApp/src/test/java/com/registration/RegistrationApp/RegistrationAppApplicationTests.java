@@ -205,7 +205,7 @@ class RegistrationAppApplicationTests {
 		resultModel.setData(mockUser1);
 		resultModel.setMessage("Success");
 
-		String Url = "/users/getByUserId?userId=NeoSoft_8";
+		String Url = "/users/getByUserId/NeoSoft_8";
 
 		Mockito.when(userService.getByUserId(Mockito.anyString())).thenReturn(mockUser1);
 
@@ -353,7 +353,7 @@ class RegistrationAppApplicationTests {
 		ResultModel resultModel = new ResultModel();
 		resultModel.setMessage("Success");
 
-		String Url = "/users/deleteUserById?id=1";
+		String Url = "/users/deleteUserById/1";
 
 		Mockito.when(userService.deleteUserById(Mockito.anyInt())).thenReturn("Success");
 
