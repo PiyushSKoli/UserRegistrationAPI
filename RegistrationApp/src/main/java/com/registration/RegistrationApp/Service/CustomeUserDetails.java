@@ -5,21 +5,35 @@ import java.util.Collection;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.registration.RegistrationApp.Entity.Admin;
 import com.registration.RegistrationApp.Entity.Users;
 
+import lombok.Data;
+
+@Data
 public class CustomeUserDetails implements UserDetails{
 
 	private static final long serialVersionUID = 1L;
 	
 	private Users user;
 	
+	private Admin admin;
+	
 	
 	public Users getUser() {
 		return user;
 	}
+	
+	public Admin getUsers() {
+		return admin;
+	}
 
 	public void setUser(Users user) {
 		this.user = user;
+	}
+	
+	public void setUser(Admin admin) {
+		this.admin = admin;
 	}
 
 	@Override
@@ -33,11 +47,21 @@ public class CustomeUserDetails implements UserDetails{
 		// TODO Auto-generated method stub
 		return user.getPassword();
 	}
+	
+	public String getPasswords() {
+		// TODO Auto-generated method stub
+		return admin.getPassword();
+	}
 
 	@Override
 	public String getUsername() {
 		// TODO Auto-generated method stub
 		return user.getUserId();
+	}
+	
+	public String getUsernames() {
+		// TODO Auto-generated method stub
+		return admin.getUserId();
 	}
 
 	@Override

@@ -6,6 +6,8 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,25 +19,68 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.registration.RegistrationApp.Dto.LoginDto;
 import com.registration.RegistrationApp.Dto.ResultModel;
 import com.registration.RegistrationApp.Dto.SearchByNameSurnamePincodeDto;
 import com.registration.RegistrationApp.Entity.Users;
 import com.registration.RegistrationApp.Service.UserService;
+import com.registration.RegistrationApp.config.JwtUtil;
 
 @RestController
 @RequestMapping(value = "/users")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class UserController {
 
 	@Autowired
 	private UserService userService;
 	
+	@Autowired
+	private JwtUtil jwtUtil;
+	
+	@Autowired
+	private AuthenticationManager authenticationManager;
+	
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
 
 	public final static Logger logger = Logger.getLogger(UserController.class);
 
-	@GetMapping(value = "")
+	@GetMapping(value ="/")
 	public String homepage() {
 		return "Welcome to Registration Form";
+	}
+	
+/*	@PostMapping("/authenticate")
+	public String generateToken(@RequestBody LoginDto loginDto) throws Exception {
+		try {
+		authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDto.getUserName(), loginDto.getPassword()));
+		}catch(Exception e) {
+			throw new Exception("Invalid Username/Password");
+		}
+		return jwtUtil.generateToken(loginDto.getUserName());
+	}*/
+	
+	@PostMapping("/authenticate")
+	public ResponseEntity<ResultModel> generateToken(@RequestBody LoginDto loginDto) {
+		ResultModel resultModel = new ResultModel();
+		logger.info("Authenticating Users.......");
+		try {
+			//authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDto.getUserName(), loginDto.getPassword()));
+			//String response=jwtUtil.generateToken(loginDto.getUserName());
+			LoginDto response = userService.login(loginDto);
+			if (response.getMessage().equals("Login Successfully")) {
+				resultModel.setData(response);
+				resultModel.setMessage("Success");
+				logger.info("Authentication Successfully.......");
+			} else {
+				resultModel.setMessage("Failed");
+				resultModel.setMessageList(null);
+				logger.info("" + response);
+			}
+		} catch (Exception e) {
+			logger.info("Error Occure" + e);
+			return new ResponseEntity<ResultModel>(resultModel, HttpStatus.UNPROCESSABLE_ENTITY);
+		}
+		return new ResponseEntity<ResultModel>(resultModel, HttpStatus.CREATED);
 	}
 
 	@GetMapping("/getAllUsers")
@@ -288,5 +333,26 @@ public class UserController {
 		return new ResponseEntity<ResultModel>(resultModel, HttpStatus.CREATED);
 	}
 
-	
+	@PostMapping("/login")
+	public ResponseEntity<ResultModel> login(@RequestBody LoginDto loginDto) {
+		ResultModel resultModel = new ResultModel();
+		logger.info("Authenticating Users");
+		try {
+			LoginDto response = userService.login(loginDto);
+			if (response.getMessage().equals("Login Successfully")) {
+				resultModel.setData(response);
+				resultModel.setMessage("Success");
+				logger.info("Authentication Successfully....!");
+				return new ResponseEntity<ResultModel>(resultModel, HttpStatus.OK);
+			} else {
+				resultModel.setMessage("Authentication Failed");
+				resultModel.setData(response);
+				logger.info("Authentication Failed....!");
+				return new ResponseEntity<ResultModel>(resultModel, HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			logger.info("Authentication Failed.....!");
+			return new ResponseEntity<ResultModel>(resultModel, HttpStatus.UNPROCESSABLE_ENTITY);
+		}
+	}
 }

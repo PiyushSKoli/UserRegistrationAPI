@@ -60,6 +60,10 @@ public class Users implements Serializable{
 	@Column(name="City")
 	private String city;
 	
+	//@NotEmpty(message = "Role may not be null")
+	@Column(name="Role")
+	private String role;
+	
 	@NotEmpty(message = "Contact_Number may not be null")
 	@Length(message = "Invalid Contact Numebr", min = 10,max=12)
 	@Column(name="Contact_Number")

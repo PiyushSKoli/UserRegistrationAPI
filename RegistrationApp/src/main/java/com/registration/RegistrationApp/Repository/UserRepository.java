@@ -36,4 +36,8 @@ public interface UserRepository extends CrudRepository<Users, Integer> {
 	public List<Users> findByNameAndPinCode(String name,Integer pinCode);
 	
 	public List<Users> findBySurnameAndPinCode(String name,Integer pinCode);
+	
+	public Users findByUserIdAndPassword(String userId,String password);
+	
+	public Users findByUserIdAndPasswordAndRole(String userId,String password,String userRole);
 }

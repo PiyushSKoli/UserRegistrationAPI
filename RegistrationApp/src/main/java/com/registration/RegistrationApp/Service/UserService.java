@@ -13,12 +13,19 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.registration.RegistrationApp.Dto.LoginDto;
 import com.registration.RegistrationApp.Dto.SearchByNameSurnamePincodeDto;
+import com.registration.RegistrationApp.Entity.Admin;
 import com.registration.RegistrationApp.Entity.Users;
+import com.registration.RegistrationApp.Repository.AdminRepository;
 import com.registration.RegistrationApp.Repository.UserRepository;
+import com.registration.RegistrationApp.config.JwtUtil;
+
 import javax.validation.ConstraintViolation;
 import javax.validation.Valid;
 
@@ -28,11 +35,20 @@ public class UserService {
 
 	@Autowired
 	private UserRepository userRepository;
+	
+	@Autowired
+	private AdminRepository adminRepository;
+	
+	@Autowired
+	private AuthenticationManager authenticationManager;
+	
+	@Autowired
+	private JwtUtil jwtUtil;
 
 	private static Validator validator;
 	
-	@Autowired
-	private BCryptPasswordEncoder bCryptPasswordEncoder;
+//	@Autowired
+//	private BCryptPasswordEncoder bCryptPasswordEncoder;
 
 	public List<Users> getAllUsers() {
 		return (List<Users>) userRepository.findAll();
@@ -44,13 +60,11 @@ public class UserService {
 
 	public List<String> saveUpdateUser(@Valid Users user) {
 		Users userData = userRepository.findByUserId(user.getUserId());
-		String pwd=user.getPassword();
+		/*String pwd=user.getPassword();
 		if(pwd!=null) {
-			System.out.println("Password is= "+pwd);
 			String encryptedPwd=bCryptPasswordEncoder.encode(pwd);
-			System.out.println("Encoded Password is= "+encryptedPwd);
 			user.setPassword(encryptedPwd);			
-		}
+		}*/
 		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 		validator = factory.getValidator();
 		List<String> response = new ArrayList<String>();
@@ -74,6 +88,7 @@ public class UserService {
 				userData.setContactNumber(user.getContactNumber());
 				userData.setJoiningDate(user.getJoiningDate());
 				userData.setEmail(user.getEmail());
+				userData.setRole(user.getRole());
 				userRepository.save(userData);
 			} else {
 				System.out.println("Inside Save API");
@@ -155,4 +170,54 @@ public class UserService {
 		return userList;
 	}
 
+	//-----------------------------------------------------------------------------------------------//
+	
+/*	public LoginDto login(LoginDto loginDto){
+		if(loginDto.getUserRole().equals("User")) {
+			Users user=userRepository.findByUserIdAndPassword(loginDto.getUserName(), loginDto.getPassword());
+			if(user!=null) {
+				loginDto.setMessage("Login Successfully");	
+			}else {
+				loginDto.setMessage("Incorrect UserName/Password");	
+			}
+		}else if(loginDto.getUserRole().equals("Admin")){
+			Admin user=adminRepository.findByUserIdAndPassword(loginDto.getUserName(), loginDto.getPassword());
+			if(user!=null) {
+				loginDto.setMessage("Login Successfully");
+			}else {
+				loginDto.setMessage("Incorrect UserName/Password");
+			}
+		}		
+		return loginDto;	
+	}*/
+	
+	public LoginDto login(LoginDto loginDto){
+		//if(loginDto.getUserRole().equals("User")) {
+			System.out.println("Inside User");
+			Users user=userRepository.findByUserIdAndPasswordAndRole(loginDto.getUserName(), loginDto.getPassword(),loginDto.getUserRole());
+			if(user!=null) {
+				loginDto.setMessage("Login Successfully");
+				authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDto.getUserName(), loginDto.getPassword()));
+				String response=jwtUtil.generateToken(loginDto.getUserName());
+				loginDto.setToken(response);
+			}else {
+				loginDto.setMessage("Incorrect UserName/Password");	
+			}
+	/*	}else if(loginDto.getUserRole().equals("Admin")){
+			System.out.println("Inside Admin");
+			Admin user=adminRepository.findByUserIdAndPassword(loginDto.getUserName(), loginDto.getPassword());
+			if(user!=null) {
+				System.out.println("Inside Admin check");
+				loginDto.setMessage("Login Successfully");
+				System.out.println("Msg Set");
+				authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDto.getUserName(), loginDto.getPassword()));
+				String response=jwtUtil.generateToken(loginDto.getUserName());
+				System.out.println("Token generate");
+				loginDto.setToken(response);
+			}else {
+				loginDto.setMessage("Incorrect UserName/Password");
+			}
+		}		*/
+		return loginDto;	
+	}
 }
