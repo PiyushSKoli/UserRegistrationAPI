@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -51,7 +52,14 @@ public class UserService {
 //	private BCryptPasswordEncoder bCryptPasswordEncoder;
 
 	public List<Users> getAllUsers() {
-		return (List<Users>) userRepository.findAll();
+		List<Users> userList=(List<Users>) userRepository.findAll();
+		List<Users> newList=new ArrayList<Users>();
+		for(Users user:userList) {
+			if(user.getRole().equals("User")) {
+				newList.add(user);
+			}
+		}
+		return newList;
 	}
 
 	public Users getByUserId(String userId) {
@@ -192,8 +200,6 @@ public class UserService {
 	}*/
 	
 	public LoginDto login(LoginDto loginDto){
-		//if(loginDto.getUserRole().equals("User")) {
-			System.out.println("Inside User");
 			Users user=userRepository.findByUserIdAndPasswordAndRole(loginDto.getUserName(), loginDto.getPassword(),loginDto.getUserRole());
 			if(user!=null) {
 				loginDto.setMessage("Login Successfully");
@@ -203,21 +209,6 @@ public class UserService {
 			}else {
 				loginDto.setMessage("Incorrect UserName/Password");	
 			}
-	/*	}else if(loginDto.getUserRole().equals("Admin")){
-			System.out.println("Inside Admin");
-			Admin user=adminRepository.findByUserIdAndPassword(loginDto.getUserName(), loginDto.getPassword());
-			if(user!=null) {
-				System.out.println("Inside Admin check");
-				loginDto.setMessage("Login Successfully");
-				System.out.println("Msg Set");
-				authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDto.getUserName(), loginDto.getPassword()));
-				String response=jwtUtil.generateToken(loginDto.getUserName());
-				System.out.println("Token generate");
-				loginDto.setToken(response);
-			}else {
-				loginDto.setMessage("Incorrect UserName/Password");
-			}
-		}		*/
 		return loginDto;	
 	}
 }

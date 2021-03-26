@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -84,7 +85,7 @@ public class UserController {
 	}
 
 	@GetMapping("/getAllUsers")
-	public ResponseEntity<ResultModel> getAllUsers() {
+	public ResponseEntity<ResultModel> getAllUsers(@RequestHeader ("Authorization") String Authorization) {
 		ResultModel resultModel = new ResultModel();
 		logger.info("Getting All Users From Users");
 		try {
@@ -106,7 +107,7 @@ public class UserController {
 	}
 
 	@GetMapping("/getByUserId/{userId}")
-	public ResponseEntity<ResultModel> getByUserId(@PathVariable("userId") String userId) {
+	public ResponseEntity<ResultModel> getByUserId(@PathVariable("userId") String userId,@RequestHeader ("Authorization") String Authorization) {
 		ResultModel resultModel = new ResultModel();
 		logger.info("Getting User By UserId From Users");
 		try {
@@ -128,7 +129,7 @@ public class UserController {
 	}
 
 	@PostMapping("/saveUpdateUser")
-	public ResponseEntity<ResultModel> cretaeUpdateUser(@RequestBody Users user) {
+	public ResponseEntity<ResultModel> cretaeUpdateUser(@RequestBody Users user,@RequestHeader ("Authorization") String Authorization) {
 		ResultModel resultModel = new ResultModel();
 		logger.info("Creating data in Users.......");
 		try {
@@ -151,7 +152,7 @@ public class UserController {
 
 	@GetMapping("/getByNameAndSurenameAndPincode")
 	public ResponseEntity<ResultModel> getByNameAndSurenameAndPincode(@RequestParam("name") String name,
-			@RequestParam("surname") String surname, @RequestParam("pinCode") Integer pinCode) {
+			@RequestParam("surname") String surname, @RequestParam("pinCode") Integer pinCode,@RequestHeader ("Authorization") String Authorization) {
 		ResultModel resultModel = new ResultModel();
 		logger.info("Getting User By Name,Surname,Pincode From Users");
 		try {
@@ -174,7 +175,7 @@ public class UserController {
 	}
 
 	@GetMapping("/getByDobAndJoiningDate")
-	public ResponseEntity<ResultModel> getByDobAndJoiningDate() {
+	public ResponseEntity<ResultModel> getByDobAndJoiningDate(@RequestHeader ("Authorization") String Authorization) {
 		ResultModel resultModel = new ResultModel();
 		logger.info("Getting All Users From Users Order By Dob and Joining Date");
 		try {
@@ -196,7 +197,7 @@ public class UserController {
 	}
 
 	@DeleteMapping("/deleteUser")
-	public ResponseEntity<ResultModel> deleteUser(@RequestParam("userId") String userId) {
+	public ResponseEntity<ResultModel> deleteUser(@RequestParam("userId") String userId,@RequestHeader ("Authorization") String Authorization) {
 		ResultModel resultModel = new ResultModel();
 		logger.info("Deleting  User in Users.......");
 		try {
@@ -219,7 +220,7 @@ public class UserController {
 
 	@PostMapping("/getByNameOrSurenameOrPincode")
 	public ResponseEntity<ResultModel> getByNameOrSurenameOrPincode(
-			@RequestBody SearchByNameSurnamePincodeDto searchByNameSurnamePincodeDto) {
+			@RequestBody SearchByNameSurnamePincodeDto searchByNameSurnamePincodeDto,@RequestHeader ("Authorization") String Authorization) {
 		ResultModel resultModel = new ResultModel();
 		logger.info("Getting User By Name,Surname,Pincode From Users");
 		try {
@@ -246,7 +247,7 @@ public class UserController {
 	 ************************************************************/
 
 	@GetMapping("/getByDobAndJoining")
-	public ResponseEntity<ResultModel> getByDobAndJoining() {
+	public ResponseEntity<ResultModel> getByDobAndJoining(@RequestHeader ("Authorization") String Authorization) {
 		ResultModel resultModel = new ResultModel();
 		logger.info("Getting All Users From Users Order By Dob and Joining Date");
 		try {
@@ -268,7 +269,7 @@ public class UserController {
 	}
 
 	@DeleteMapping("/deleteUserById/{id}")
-	public ResponseEntity<ResultModel> deleteUserById(@PathVariable("id") Integer id) {
+	public ResponseEntity<ResultModel> deleteUserById(@PathVariable("id") Integer id,@RequestHeader ("Authorization") String Authorization) {
 		ResultModel resultModel = new ResultModel();
 		logger.info("Deleting  User in Users.......");
 		try {
@@ -290,7 +291,7 @@ public class UserController {
 	}
 
 	@GetMapping("/getAllUsersData")
-	public ResponseEntity<ResultModel> getAllUsersData() {
+	public ResponseEntity<ResultModel> getAllUsersData(@RequestHeader ("Authorization") String Authorization) {
 		ResultModel resultModel = new ResultModel();
 		logger.info("Getting All Users From Users");
 		try {
@@ -312,7 +313,7 @@ public class UserController {
 	}
 	
 	@PostMapping("/saveUpdateUser1")
-	public ResponseEntity<ResultModel> cretaeUpdateUser1(@RequestBody Users user) {
+	public ResponseEntity<ResultModel> cretaeUpdateUser1(@RequestBody Users user,@RequestHeader ("Authorization") String Authorization) {
 		ResultModel resultModel = new ResultModel();
 		logger.info("Creating data in Users.......");
 		try {
